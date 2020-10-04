@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "rm -rf build && cd options-ui && npm run build --prod && cp -r build ../"
+    "build": "rm -rf build && cd ui && npm run build --prod && cp -r build ../"
   },
   "keywords": [
     "Zerodha",
