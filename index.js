@@ -74,10 +74,10 @@ const orderHornExit = (stockA, stockB, stockC, stockD, exitPrice) => {
   const dQty = stockD.quantity;
 
   // Extract position values for each stock
-  const aPv = Number(stockA.positionValue);
-  const bPv = Number(stockB.positionValue);
-  const cPv = Number(stockC.positionValue);
-  const dPv = Number(stockD.positionValue);
+  const aPv = stockA.positionValue;
+  const bPv = stockB.positionValue;
+  const cPv = stockC.positionValue;
+  const dPv = stockD.positionValue;
 
   // Declare variables which will be updated on each tick
   let aSellersBid, bBuyersBid, cBuyersBid, dSellersBid;
