@@ -28,31 +28,32 @@ app.post("/orderHornExit", ({ body }, response) => {
 });
 
 // Order function
-const order = async (stock) => {
+const order = async (stock, price) => {
   const timestamp = new Date();
   console.log(
-    `Order placed for ${stock.exchange}:${stock.tradingsymbol}, Transaction: ${stock.transactionType}, product: ${stock.product}, quantity: ${stock.quantity}`,
+    `Order placed for ${stock.exchange}:${stock.tradingsymbol}, Transaction: ${stock.transactionType}, product: ${stock.product}, quantity: ${stock.quantity}, price: ${price}`,
   );
   console.log(`Time of order: ${timestamp.toUTCString()}`);
 
-  // return kc.placeOrder("regular", {
-  //   exchange: stock.exchange,
-  //   tradingsymbol: stock.tradingsymbol,
-  //   transaction_type: stock.transactionType,
-  //   quantity: stock.quantity,
-  //   product: stock.product,
-  //   order_type: "LIMIT",
-  // });
+  return kc.placeOrder("regular", {
+    exchange: stock.exchange,
+    tradingsymbol: stock.tradingsymbol,
+    transaction_type: stock.transactionType,
+    quantity: stock.quantity,
+    product: stock.product,
+    price: price,
+    order_type: "LIMIT",
+  });
 
-  return `Order placed for ${stock.exchange}:${stock.tradingsymbol}, Transaction: ${stock.transactionType}, product: ${stock.product}, quantity: ${stock.quantity}`;
+  // return `Order placed for ${stock.exchange}:${stock.tradingsymbol}, Transaction: ${stock.transactionType}, product: ${stock.product}, quantity: ${stock.quantity}`;
 };
 
-const placeOrder = async (stockArray) => {
+const placeOrder = async (stockArray, priceArray) => {
   const promiseArray = [];
 
-  stockArray.forEach((s) => {
-    promiseArray.push(order(s));
-  });
+  for (let i = 0; i < 4; i++) {
+    promiseArray.push(order(stockArray[i], priceArray[i] + 0.1));
+  }
 
   await Promise.all(promiseArray);
 
@@ -108,6 +109,8 @@ const orderHornExit = (stockA, stockB, stockC, stockD, exitPrice) => {
     access_token: accessToken,
   });
 
+  ticker.connect();
+
   ticker.on("connect", () => {
     console.log("Subscribing to stocks...");
     const items = [aToken, bToken, cToken, dToken];
@@ -151,7 +154,10 @@ const orderHornExit = (stockA, stockB, stockC, stockD, exitPrice) => {
       // Look for Exit
       if (lookForExit()) {
         placedOrder = true;
-        placeOrder([stockA, stockB, stockC, stockD]);
+        placeOrder(
+          [stockA, stockB, stockC, stockD],
+          [aSellersBid, bBuyersBid, cBuyersBid, dSellersBid],
+        );
       }
     } else if (placedOrder) {
       ticker.disconnect();
